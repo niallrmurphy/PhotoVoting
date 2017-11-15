@@ -1,13 +1,16 @@
 const newImage = () => {
   console.log('you clicked it');
-  document.getElementById("photoItem").src = `https://picsum.photos/800/500/?image=${Math.round(Math.random()* 49)}`
+  document.getElementById("photoItem").src = `https://picsum.photos/400/250/?image=${Math.round(Math.random()* 49)}`
 
 }
 
 const upVote = function() {  //arrow function for "this" will not work
   this.className = "fa fa-thumbs-up";
   PicId = document.getElementById("photoItem").src.match(/=(\d+)/)[1];
-  console.log(PicId);
+  fetch(`/upVoteCount`, {
+    method: 'POST',
+    body: {"chosenPhoto": "PicId"}
+  })
 }
 
 const downVote = function() {

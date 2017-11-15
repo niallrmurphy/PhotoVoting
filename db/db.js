@@ -1,4 +1,4 @@
-const pg = require('pg-promise'){} // default options = {};
+const pg = require('pg-promise')(); // default options = ();
 
 const connectionString = "postgres://process.env.USER:@localhost:5432/photo_votes" //connects db to app;
 const db = pg(connectionString);
@@ -38,3 +38,9 @@ const totalVotes = (photo) => {
   `,
   photo )
 };
+
+module.exports = {
+  totalVotes,
+  addUpVote,
+  addDownVote
+}
