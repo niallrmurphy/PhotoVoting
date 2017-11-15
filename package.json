@@ -20,5 +20,8 @@
   "dependencies": {
     "express": "^4.16.2",
     "pg-promise": "^7.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
   }
 }

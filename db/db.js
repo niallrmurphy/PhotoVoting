@@ -1,6 +1,6 @@
 const pg = require('pg-promise'){} // default options = {};
 
-const connectionString = "postgres://process.env.USER:@localhost:5432/photo_votes";
+const connectionString = "postgres://process.env.USER:@localhost:5432/photo_votes" //connects db to app;
 const db = pg(connectionString);
 
 const addDownVote = (photo) => {
