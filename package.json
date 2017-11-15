@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db": "dropdb photoVotes; createdb photoVotes; psql photoVotes < schema.sql; psql photoVotes < init_data.sql"
   },
   "repository": {
     "type": "git",
