@@ -1,5 +1,9 @@
+window.onload = () =>{
+  document.getElementById("photoItem").src = `https://picsum.photos/800/500/?image=${Math.round(Math.random()* 49)}`
+};
+
+
 const newImage = function() {
-  console.log('you clicked it');
   this.src = `https://picsum.photos/800/500/?image=${Math.round(Math.random()* 49)}`
   document.getElementById("upbtn").className = "fa fa-thumbs-o-up";
   document.getElementById("downbtn").className = "fa fa-thumbs-o-down";
@@ -7,7 +11,7 @@ const newImage = function() {
 
 const upVote = function() {  //arrow function for "this" will not work
   this.className = "fa fa-thumbs-up";
-  PicId = document.getElementById("photoItem").src.match(/=(\d+)/)[1];
+  const PicId = document.getElementById("photoItem").src.match(/=(\d+)/)[1];
   fetch(`/upVoteCount`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'}, //tells the route the body is in json so we can get params from it.
