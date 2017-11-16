@@ -5,4 +5,5 @@
 
 #photoItem {
     cursor: pointer;
+    border: 5px solid white;
 }
