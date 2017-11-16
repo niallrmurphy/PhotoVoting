@@ -1,10 +1,11 @@
 const pg = require('pg-promise')(); // default options = ();
 
-const connectionString = `postgres://${process.env.USER}:@localhost:5432/photo_votes` //connects db to app;
+// connects db to app;
+const connectionString = `postgres://${process.env.USER}:@localhost:5432/photo_votes`;
 const db = pg(connectionString);
 
-const addDownVote = (photo) => {
-  return db.none(`
+const addDownVote = photo =>
+  db.none(`
     UPDATE
       photoVotes
     SET
@@ -12,11 +13,11 @@ const addDownVote = (photo) => {
     WHERE
       photoID = $1
     `, // uses subquery to select current value from table, and increments by one downvote.
-  photo )
-};
+    photo);
 
-const addUpVote = (photo) => {
-  return db.none(`
+
+const addUpVote = photo =>
+  db.none(`
     UPDATE
       photoVotes
     SET
@@ -24,23 +25,21 @@ const addUpVote = (photo) => {
     WHERE
       photoID = $1
     `, // uses subquery to select current value from table, and increments by one upvote.
-  photo )
-};
+    photo);
 
-const totalVotes = (photo) => {
-  return db.one(`
+
+const totalVotes = photo =>
+  db.one(`
     SELECT
       *
     FROM
       photoVotes
     WHERE
       photoID = $1
-  `,
-  photo )
-};
+  `, photo);
 
 module.exports = {
   totalVotes,
   addUpVote,
-  addDownVote
-}
+  addDownVote,
+};
