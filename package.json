@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db": "dropdb photo_votes; createdb photo_votes; psql photo_votes < schema.sql; psql photo_votes < init_data.sql"
+    "db": "dropdb photo_votes; createdb photo_votes; psql photo_votes < ./db/schema.sql; psql photo_votes < ./db/init_data.sql"
   },
   "repository": {
     "type": "git",
