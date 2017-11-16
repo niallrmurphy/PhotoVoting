@@ -4,7 +4,7 @@ const connectionString = `postgres://${process.env.USER}:@localhost:5432/photo_v
 const db = pg(connectionString);
 
 const addDownVote = (photo) => {
-  return db.one(`
+  return db.none(`
     UPDATE
       photoVotes
     SET
@@ -16,7 +16,7 @@ const addDownVote = (photo) => {
 };
 
 const addUpVote = (photo) => {
-  return db.one(`
+  return db.none(`
     UPDATE
       photoVotes
     SET
@@ -30,7 +30,7 @@ const addUpVote = (photo) => {
 const totalVotes = (photo) => {
   return db.one(`
     SELECT
-      upVote, downVote
+      *
     FROM
       photoVotes
     WHERE

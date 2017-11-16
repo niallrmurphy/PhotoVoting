@@ -16,8 +16,10 @@ const upVote = function() {  //arrow function for "this" will not work
     method: 'POST',
     headers: {'Content-Type': 'application/json'}, //tells the route the body is in json so we can get params from it.
     body: JSON.stringify({chosenPhoto: PicId})
-  }).then((data) => {
-    //update DOM with data
+  }).then((dataStream) => dataStream.json())
+    .then((message) => {
+      console.log('ajax response', message);
+    document.getElementById("voteTally").innerHTML = `total likes: ${message.upvote} total dislikes: ${message.downvote}`;
   }).catch((error) =>{
     console.log(error);
   })

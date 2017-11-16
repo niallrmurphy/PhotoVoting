@@ -4,15 +4,21 @@ const db = require('./db/db');
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: false })); //need this for bodyParser.
+//need this for bodyParser.
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(express.static('public')); //<- it knows to look for the index.html file
+//express knows to look for the index.html file in the folder specified.
+app.use(express.static('public'));
 
-app.post("/upVoteCount", (req, res) =>{ // express routing for get and post requests in express
-  console.log(req.body);
+//express route for GET and POST requests to db
+app.post("/upVoteCount", (req, res) =>{
   db.addUpVote(req.body.chosenPhoto)
-    // .then(db.totalVotes(req.body.chosenPhoto))
+    .then(() => {
+      return db.totalVotes(req.body.chosenPhoto);
+
+    }).then((number) => res.json(number))
+    .catch((e) => console.log(e))
 })
 
 const server = app.listen(3000, () => {
