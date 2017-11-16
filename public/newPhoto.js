@@ -1,7 +1,8 @@
-const newImage = () => {
+const newImage = function() {
   console.log('you clicked it');
-  document.getElementById("photoItem").src = `https://picsum.photos/400/250/?image=${Math.round(Math.random()* 49)}`
-
+  this.src = `https://picsum.photos/800/500/?image=${Math.round(Math.random()* 49)}`
+  document.getElementById("upbtn").className = "fa fa-thumbs-o-up";
+  document.getElementById("downbtn").className = "fa fa-thumbs-o-down";
 }
 
 const upVote = function() {  //arrow function for "this" will not work
@@ -9,7 +10,8 @@ const upVote = function() {  //arrow function for "this" will not work
   PicId = document.getElementById("photoItem").src.match(/=(\d+)/)[1];
   fetch(`/upVoteCount`, {
     method: 'POST',
-    body: {"chosenPhoto": "PicId"}
+    headers: {'Content-Type': 'application/json'}, //tells the route the body is in json so we can get params from it.
+    body: JSON.stringify({"chosenPhoto": PicId})
   })
 }
 
@@ -22,9 +24,9 @@ const image = document.getElementById("photoItem");
 const upButton = document.getElementById("upbtn")
 const downButton = document.getElementById("downbtn")
 
-
+/*event listeners for image*/
 image.addEventListener("click", newImage);
-
+//image.addEventListener("mouseover", )
 
 upButton.addEventListener("click", upVote);
 downButton.addEventListener("click", downVote);
