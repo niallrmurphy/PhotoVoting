@@ -1,0 +1,8 @@
+
+#photoItem:hover {
+    border: 5px solid red;
+}
+
+#photoItem {
+    cursor: pointer;
+}
