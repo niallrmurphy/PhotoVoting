@@ -40,7 +40,6 @@ function vote() { // arrow function for 'this' will not work
     .then((message) => {
       document.getElementById('upbtn').innerHTML = message.upvote;
       document.getElementById('downbtn').innerHTML = message.downvote;
-      // document.getElementById('voteTally').innerHTML = `total likes: ${message.upvote} total dislikes: ${message.downvote}`;
     }).catch((error) => {
       console.log(error);
     });
