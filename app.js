@@ -13,7 +13,7 @@ app.use(express.static('public'));
 
 // express route for POST requests to db
 app.post('/countVote', (req, res) => {
-  db.addVote(req.body.chosenPhoto, req.body.thumb)
+  db.addVote(req.body.chosenPhoto, req.body.thumb, req.body.increasingVote)
     .then(message => res.json(message))
     .catch(e => console.log(e));
 });
