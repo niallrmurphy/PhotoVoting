@@ -11,11 +11,10 @@ app.use(bodyParser.json());
 // express knows to look for the index.html file in the folder specified.
 app.use(express.static('public'));
 
-// express route for GET and POST requests to db
-app.post('/upVoteCount', (req, res) => {
-  db.addUpVote(req.body.chosenPhoto)
-    .then(() => db.totalVotes(req.body.chosenPhoto)
-      .then(number => res.json(number)))
+// express route for POST requests to db
+app.post('/countVote', (req, res) => {
+  db.addVote(req.body.chosenPhoto, req.body.thumb)
+    .then(message => res.json(message))
     .catch(e => console.log(e));
 });
 

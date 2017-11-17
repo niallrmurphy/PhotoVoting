@@ -4,42 +4,16 @@ const pg = require('pg-promise')(); // default options = ();
 const connectionString = `postgres://${process.env.USER}:@localhost:5432/photo_votes`;
 const db = pg(connectionString);
 
-const addDownVote = photo =>
-  db.none(`
-    UPDATE
-      photoVotes
-    SET
-      downVote = (SELECT downVote FROM photoVotes WHERE photoID = $1) + 1
-    WHERE
-      photoID = $1
-    `, // uses subquery to select current value from table, and increments by one downvote.
-    photo);
-
-
-const addUpVote = photo =>
-  db.none(`
-    UPDATE
-      photoVotes
-    SET
-      upVote = (SELECT upVote FROM photoVotes WHERE photoID = $1) + 1
-    WHERE
-      photoID = $1
-    `, // uses subquery to select current value from table, and increments by one upvote.
-    photo);
-
-
-const totalVotes = photo =>
+const addVote = (photo, thumb) =>
   db.one(`
-    SELECT
-      *
-    FROM
+    UPDATE
       photoVotes
+    SET
+      ${thumb}Vote = (SELECT ${thumb}Vote FROM photoVotes WHERE photoID = $1) + 1
     WHERE
       photoID = $1
-  `, photo);
+    RETURNING *
+    `, // uses subquery to select current value from table, and increments by one downvote.
+  photo);
 
-module.exports = {
-  totalVotes,
-  addUpVote,
-  addDownVote,
-};
+module.exports = { addVote };
