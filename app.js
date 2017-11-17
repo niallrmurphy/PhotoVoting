@@ -18,6 +18,6 @@ app.post('/countVote', (req, res) => {
     .catch(e => console.log(e));
 });
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log('Listening on port %s...', server.address().port); // string interpolation
 });
