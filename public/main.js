@@ -1,11 +1,24 @@
+/**
+ * Generates a random number between 0-49 for a random image.
+ * @return {string} url of random image
+ */
 function randomImage() {
   return `https://picsum.photos/800/500/?image=${Math.round(Math.random() * 49)}`;
 }
 
+/**
+ * Sets src of the image to a new random image
+ * @return {undefined}
+ */
 window.onload = () => {
   document.getElementById('photoItem').src = randomImage();
 };
 
+/**
+ * Sets src of image to a new random image and
+ * resets the button visuals (count and outline).
+ * @return {undefined}
+ */
 function newImage() {
   this.src = randomImage();
   const up = document.getElementById('upbtn');
@@ -18,6 +31,11 @@ function newImage() {
   down.innerHTML = ' ';
 }
 
+/**
+ * Indicates vote on the DOM, calls fetch to log vote
+ * and get back total votes counts, updates DOM accordingly.
+ * @return {undefined}
+ */
 function vote() { // arrow function for 'this' will not work
   const PicId = document.getElementById('photoItem').src.match(/=(\d+)/)[1];
   let thumb = '';
