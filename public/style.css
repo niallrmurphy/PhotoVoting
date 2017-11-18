@@ -1,9 +1,9 @@
 
-#photoItem:hover {
+img:hover {
     border: 5px solid red;
 }
 
-#photoItem {
+img {
     cursor: pointer;
     border: 5px solid white;
 }
