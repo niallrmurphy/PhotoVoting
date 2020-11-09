@@ -6,6 +6,32 @@ function randomImage() {
   return `https://picsum.photos/800/500/?image=${Math.round(Math.random() * 49)}`;
 }
 
+function decide_which_images(group_oriented, display_size) {
+  /**
+   * If group_oriented is false:
+   * Scan the database to find all images, pick display_size random selections
+   * (2 by default).
+   * If group_oriented is true:
+   * Scan the database to find out, for every image, what group(s)
+   * it is in (if any). For example, image 1 in groups [1, 2, 3] and
+   * image 2 in groups [15].
+   * Build a table of all groups, and a mapping between all groups and images.
+   * Randomly select a group (with > display_size members).
+   * Randomly select display_size images within that group.
+   **/
+   //scan_db;
+   if(typeof group_oriented === 'undefined')
+   {
+     
+   }
+   else
+   {
+     // 
+   }
+   if (!group_oriented) {
+     
+   }
+}
 
 /**
  * Sets src of image to a new random image and
