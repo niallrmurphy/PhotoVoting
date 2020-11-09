@@ -1,8 +1,13 @@
-const pg = require('pg-promise')(); // default options = ();
+const sqlite3 = require('sqlite3').verbose();
 
 // connects db to app;
-const connectionString = `postgres://${process.env.USER}:@localhost:5432/photo_votes`;
-const db = pg(connectionString);
+
+let db = new sqlite3.Database('./pics.db', (err) => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log('Connected to the pics database.');
+});
 
 /**
  * Queries the database to (add/remove) an (up/down) vote on a given photo.
@@ -13,16 +18,46 @@ const db = pg(connectionString);
  */
 const addVote = (photo, thumb, adding) => {
   const add = adding ? 1 : -1;
-  return db.one(`
-    UPDATE
-      photoVotes
-    SET
-      ${thumb}Vote = (SELECT ${thumb}Vote FROM photoVotes WHERE photoID = $1) + ${add}
-    WHERE
-      photoID = $1
-    RETURNING *
-    `, // uses subquery to select current value from table, and increments by one downvote.
-  photo);
+
+  let sql = `UPDATE
+    photoVotes
+  SET
+    ${thumb}Vote = ${thumb}Vote + ${add}
+  WHERE
+    photoID = $1`;
+  console.log(`${sql}`)
+  db.serialize(() => {
+    db.run(sql, photo, function(err) {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(`Row(s) updated: ${this.changes}`);
+    });
+    return db;
+  });
 };
 
-module.exports = { addVote };
+// close the database connection
+function cleanup() {
+  //db.close((err) => {
+  //  if (err) {
+  //    return console.error(err.message);
+  //  }
+  //};
+};
+
+const buildImageStructure = () => {
+  let sql = 'SELECT * FROM photoVotes';
+  db.serialize(() => {
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        throw err;
+      }
+      rows.forEach((row) => {
+        console.log(row.name);
+      });
+    });
+  });
+}
+
+module.exports = { addVote, buildImageStructure };
