@@ -1,3 +1,7 @@
+Extending with sqlite, image serving, and random subset picking
+
+
+-- ORIGINAL README
 To run our lovely program:
 
 npm install
