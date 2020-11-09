@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
-    "db:init": "dropdb photo_votes; createdb photo_votes; psql photo_votes < ./db/schema.sql; psql photo_votes < ./db/init_data.sql"
+    "OLDdb:init": "dropdb photo_votes; createdb photo_votes; psql photo_votes < ./db/schema.sql; psql photo_votes < ./db/init_data.sql",
+    "db:init": "sqlite3 pics.db < ./db/schema.sql; sqlite3 pics.db < ./db/init_data.sql"
   },
   "repository": {
     "type": "git",
@@ -18,18 +19,22 @@
     "url": "https://github.com/bterbs/PhotoVoting/issues"
   },
   "homepage": "https://github.com/bterbs/PhotoVoting#readme",
+  "OLDdependencies": {
+    "pg-promise": "^7.3.1"
+  },
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
-    "pg-promise": "^7.3.1"
+    "express-sharp": "^4.2.15",
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.12.1",
     "ajv": "^5.2.2",
     "eslint": "^4.6.1",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
-    "eslint-plugin-react": "^7.3.0"
+    "eslint-plugin-react": "^7.3.0",
+    "nodemon": "^1.12.1"
   }
 }
