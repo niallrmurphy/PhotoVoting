@@ -19,17 +19,24 @@ function decide_which_images(group_oriented, display_size) {
    * Randomly select a group (with > display_size members).
    * Randomly select display_size images within that group.
    **/
-   //scan_db;
+   // Things we'll need no matter what
+   count = db.run('SELECT COUNT(*) FROM photoVotes', (err) => {
+     if (err) {
+       console.log('DB COUNT(*) ERROR', err)
+     }
+   });
+   total_photo_array = db.run('SELECT DISTINCT photoID FROM photoVotes', (err) => {
+     if (err) {
+       console.log('DB SELECT DISTINCT ERROR', err)
+     }
+   }
    if(typeof group_oriented === 'undefined')
    {
-     
+
    }
    else
    {
-     // 
-   }
-   if (!group_oriented) {
-     
+     //
    }
 }
 
