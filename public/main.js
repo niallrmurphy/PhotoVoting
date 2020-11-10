@@ -6,7 +6,7 @@ function randomImage() {
   return `https://picsum.photos/800/500/?image=${Math.round(Math.random() * 49)}`;
 }
 
-function decide_which_images(group_oriented, display_size) {
+function decideWhichImages(group_oriented, display_size) {
   /**
    * If group_oriented is false:
    * Scan the database to find all images, pick display_size random selections
@@ -19,25 +19,21 @@ function decide_which_images(group_oriented, display_size) {
    * Randomly select a group (with > display_size members).
    * Randomly select display_size images within that group.
    **/
-   // Things we'll need no matter what
-   count = db.run('SELECT COUNT(*) FROM photoVotes', (err) => {
-     if (err) {
-       console.log('DB COUNT(*) ERROR', err)
-     }
-   });
-   total_photo_array = db.run('SELECT DISTINCT photoID FROM photoVotes', (err) => {
-     if (err) {
-       console.log('DB SELECT DISTINCT ERROR', err)
-     }
-   }
-   if(typeof group_oriented === 'undefined')
-   {
-
-   }
-   else
-   {
-     //
-   }
+  // Things we'll need no matter what
+  if(typeof display_size === 'undefined') {
+    display_size = 2;
+  }
+  console.log(display_size);
+  countImages();
+  createPhotoArray();
+  if(typeof group_oriented === 'undefined')
+  {
+    _.sample(total_photo_array, display_size);
+  }
+  else
+  {
+    //
+  }
 }
 
 /**

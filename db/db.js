@@ -37,6 +37,24 @@ const addVote = (photo, thumb, adding) => {
   });
 };
 
+const countImages =() => {
+  count = db.run('SELECT COUNT(*) FROM photoVotes', (err) => {
+    if (err) {
+      console.log('DB COUNT(*) ERROR', err)
+    }
+  });
+  console.log(count);
+};
+
+const createPhotoArray =() => {
+  db.run('SELECT DISTINCT photoID FROM photoVotes', (err) => {
+    if (err) {
+      console.log('DB SELECT DISTINCT ERROR', err)
+    }
+  });
+  console.log(total_photo_array);
+};
+
 // close the database connection
 function cleanup() {
   //db.close((err) => {
@@ -60,4 +78,4 @@ const buildImageStructure = () => {
   });
 }
 
-module.exports = { addVote, buildImageStructure };
+module.exports = { addVote, buildImageStructure, countImages, createPhotoArray };
