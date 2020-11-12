@@ -38,21 +38,26 @@ const addVote = (photo, thumb, adding) => {
 };
 
 const countImages =() => {
-  count = db.run('SELECT COUNT(*) FROM photoVotes', (err) => {
+  count = db.get('SELECT COUNT(*) FROM photoVotes', (err, row) => {
     if (err) {
-      console.log('DB COUNT(*) ERROR', err)
-    }
+      console.log('DB COUNT(*) ERROR', err);
+    };
+    return row['COUNT(*)']
+      ? console.dir(row)
+      : console.log(`No count found for photoVotes (this shoudl not happen)`);
   });
-  console.log(count);
 };
 
 const createPhotoArray =() => {
-  db.run('SELECT DISTINCT photoID FROM photoVotes', (err) => {
+  var total_photo_array = Array();
+  db.each('SELECT DISTINCT photoID FROM photoVotes', (err, row) => {
     if (err) {
-      console.log('DB SELECT DISTINCT ERROR', err)
-    }
+      console.log('DB SELECT DISTINCT ERROR', err);
+    };
+    var pid = row.photoID;
+    total_photo_array.push(pid);
   });
-  console.log(total_photo_array);
+  return total_photo_array;
 };
 
 // close the database connection
@@ -70,7 +75,7 @@ const buildImageStructure = () => {
     db.all(sql, [], (err, rows) => {
       if (err) {
         throw err;
-      }
+      };
       rows.forEach((row) => {
         console.log(row.name);
       });

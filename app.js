@@ -21,7 +21,7 @@ app.post('/countVote', (req, res) => {
   db.addVote(req.body.chosenPhoto, req.body.thumb, req.body.increasingVote)
   //console.dir(res);
     //.run(message => res.json(message))
-    .catch(e => console.log(e));
+    //.catch(e => console.log(e));
   db.countImages();
   db.createPhotoArray();
 });
