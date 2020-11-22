@@ -7,7 +7,7 @@ class PhotoStates {
   function __construct($mydbh = null) {
     if ($mydbh === null) {
       $this->db = new MyDB();
-      error_log("LOG: default test DB opening\n");
+      // error_log("LOG: default test DB opening\n");
     } else {
       $this->db = $mydbh;
     }
@@ -28,16 +28,9 @@ class PhotoStates {
       }
       try {
         $result = $statement->execute([$photo_id]);
-        $updated = $statement->rowCount();
+        $rows = $statement->rowCount();
       } catch (Exception $e) {
         die("DB exception in addVote");
-      }
-      echo "UPDATED: ", $updated;
-      $rows = $updated;
-      echo "GOT HERE";
-      while ($result->fetchArray()) {
-        echo " RES DUMP ", $result;
-        $rows++;
       }
       if ($rows == 0) {
         return FALSE;
@@ -67,24 +60,8 @@ class PhotoStates {
     $total_photo_array = Array();
     $stmt = $this->db->db->query('SELECT * FROM photoVotes');
     foreach ($stmt as $row) {
-      array_push($total_photo_array, $row['photoID']);
-    }
-    return $total_photo_array;
-  }
-
-  function buildGroups() {
-    $total_group_array = Array();
-    $stmt = $this->db->db->query('SELECT photoID, groups FROM photoVotes');
-    foreach ($stmt as $row) {
-      $id = $row['photoID'];
-      $groupstring = $row['groups'];
-      echo "VD"; var_dump($groupstring);
-      if ($groupstring = '') {
-        $groups = explode(",", $groupstring);
-      }
-      foreach ($groups as $elem) {
-        array_push($total_group_array[$elem], $photo_id);
-      }
+      $total_photo_array[$row['photoID']] = array(
+        $row['upVote'], $row['downVote'], $row['groups']);
     }
     return $total_photo_array;
   }
@@ -94,10 +71,32 @@ class PhotoStates {
       return null;
     }
     $groups = Array();
-    $stmt = $this->db->db->query('SELECT groups FROM photoVotes WHERE ' .
-      'photoID = ?');
-    $groupstring = $stmt->fetch()['groups'];
-    return (explode(",", $groupstring));
+    $sql = 'SELECT groups FROM photoVotes WHERE photoID = ?';
+    $statement = $this->db->db->prepare($sql);
+    $statement->execute([$photo_id]);
+    while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
+        $result = $row['groups'];
+    }
+    return (explode(",", $result));
+  }
+
+  function buildGroups() {
+    $total_group_array = Array();
+    $stmt = $this->db->db->query('SELECT photoID, groups FROM photoVotes');
+    foreach ($stmt as $row) {
+      $id = $row['photoID'];
+      $groupstring = $row['groups'];
+      $groups = explode(",", $groupstring);
+      foreach ($groups as $elem) {
+        // elem = a group number; want elem => [ids_using_it]
+        if (empty($total_group_array[$elem])) {
+          $total_group_array[$elem] = Array($id);
+        } else {
+          array_push($total_group_array[$elem], $id);
+        }
+      }
+    }
+    return $total_group_array;
   }
 
   function randomImageURL($image_array) {
@@ -135,18 +134,4 @@ class PhotoStates {
     return $selections;
   }
 
-// const buildImageStructure = () => {
-//   let sql = 'SELECT * FROM photoVotes';
-//   db.serialize(() => {
-//     db.all(sql, [], (err, rows) => {
-//       if (err) {
-//         throw err;
-//       };
-//       rows.forEach((row) => {
-//         console.log(row.name);
-//       });
-//     });
-//   });
 }
-
-// module.exports = { addVote, buildImageStructure, countImages, createPhotoArray };
