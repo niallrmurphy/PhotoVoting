@@ -85,5 +85,10 @@ class PhotoStatesTest extends TestCase {
        '4' => [1]]
     );
   }
+  public function testDecideWhichImages() {
+    $this->AssertEquals($this->pstates->decideWhichImages(), [0, 1]);
+    $this->AssertEquals($this->pstates->decideWhichImages(null, 1),
+      [0,]);
+  }
 }
 ?>

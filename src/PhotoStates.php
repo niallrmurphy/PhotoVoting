@@ -120,17 +120,19 @@ class PhotoStates {
     if($display_size === null) {
       $display_size = 2;
     }
-    $number = countImages();
-    $distinct_pics = createPhotoArray();
+    $number = $this->countImages();
+    $distinct_pics = $this->createPhotoArray();
     $selections = Array();
     //
     if ($group_oriented === null) {
-      array_push($selections).array_rand($distinct_pics, $display_size);
+      //array_push($selections).
+      $selections = array_rand($distinct_pics, $display_size);
     } else {
       $group_struct = buildGroups();
       $group = array_rand($group_struct); // Need display_size check
       $selections = array_rand($group_struct[$group], $display_dize);
     }
+    echo "\nSELECTIONS ", var_dump($selections);
     return $selections;
   }
 
