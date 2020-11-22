@@ -28,16 +28,9 @@ class PhotoStates {
       }
       try {
         $result = $statement->execute([$photo_id]);
-        $updated = $statement->rowCount();
+        $rows = $statement->rowCount();
       } catch (Exception $e) {
         die("DB exception in addVote");
-      }
-      echo "UPDATED: ", $updated;
-      $rows = $updated;
-      echo "GOT HERE";
-      while ($result->fetchArray()) {
-        echo " RES DUMP ", $result;
-        $rows++;
       }
       if ($rows == 0) {
         return FALSE;
