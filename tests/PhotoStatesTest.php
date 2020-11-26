@@ -13,6 +13,7 @@ class PhotoStatesTest extends TestCase {
       photoID INTEGER PRIMARY KEY,
       upVote INTEGER DEFAULT 0,
       downVote INTEGER DEFAULT 0,
+      imgpath TEXT,
       groups TEXT
     );";
     $add_data = Array("INSERT INTO photoVotes (photoID, groups) VALUES (0, '1,2,3');",

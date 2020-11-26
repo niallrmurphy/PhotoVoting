@@ -29,23 +29,36 @@ class Importing {
     }
   }
 
-  function addImage ($groups) {
-    // Can't vote for a non-existent ID
-    $sql = "INSERT INTO photoVotes (path, groups) SET " . $column_name . " = " . $column_name .
-      " " . $delta . " WHERE photoID = ?";
-    $statement = $this->db->db->prepare($sql);
-    if (!$statement) {
-      die ("Could not prepare statement in addVote");
-    }
-    try {
-      $result = $statement->execute([$photo_id]);
-      $rows = $statement->rowCount();
-    } catch (Exception $e) {
-      die("DB exception in addVote");
-    }
-    if ($rows == 0) {
+  function addImage ($path, $groups) {
+    if (!isset($path)) {
+      echo ("Can't add an image without knowing what the path is");
       return FALSE;
+    }
+    // For the moment, assume an image can only be in one group. FIXME later.
+    // Lots of duplicated code here, but not much we can do about it right now.
+    if (isset($groups)) {
+      $sql = "INSERT INTO photoVotes (imgpath, groups) VALUES (?, ?) ";
+      $statement = $this->db->db->prepare($sql);
+      if (!$statement) {
+        die ("Could not prepare statement in addVote");
+      }
+      try {
+        $result = $statement->execute([$path, $groups]);
+      } catch (Exception $e) {
+        die("DB exception in addImage");
+      }
+      return TRUE;
     } else {
+      $sql = "INSERT INTO photoVotes (imgpath) VALUES (?)";
+      $statement = $this->db->db->prepare($sql);
+      if (!$statement) {
+        die ("Could not prepare statement in addVote");
+      }
+      try {
+        $result = $statement->execute([$path]);
+      } catch (Exception $e) {
+        die("DB exception in addImage");
+      }
       return TRUE;
     }
   }

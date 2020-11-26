@@ -12,6 +12,7 @@ class ImportTest extends TestCase {
       photoID INTEGER PRIMARY KEY,
       upVote INTEGER DEFAULT 0,
       downVote INTEGER DEFAULT 0,
+      imgpath TEXT,
       groups TEXT
     );";
     // PDO is one beat to the bar (i.e. no multiple SQL statements)
@@ -53,6 +54,13 @@ class ImportTest extends TestCase {
       )
     );
     $this->AssertEquals($imp->parseCSV(), $testarray);
+  }
+
+  public function testAddImage() {
+    $imp = new Importing(null, "./export_list-4.csv");
+    $parse_result = $imp->parseCSV();
+    $this->AssertEquals($imp->addImage($parse_result[0][0], null), TRUE);
+    $this->AssertEquals($imp->addImage($parse_result[0][0], $parse_result[0][1]), TRUE);
   }
 }
 ?>
