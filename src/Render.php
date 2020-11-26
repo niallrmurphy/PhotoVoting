@@ -30,7 +30,7 @@ class Render {
     }
     $prefix = $assumed_path;
     $url = $prefix . $postfix;
-    header('Location: $url');
+    return $url;
   }
 
   function renderPage($group_oriented = null,
@@ -93,3 +93,4 @@ class Render {
 }
 
 $R = new Render();
+header('Location: $url');
