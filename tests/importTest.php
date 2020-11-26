@@ -37,7 +37,22 @@ class ImportTest extends TestCase {
   }
 
   public function testImport() {
-
+    $imp = new Importing(null, "./export_list-4.csv");
+    $testarray = array(
+      0 => array(
+        '0' => 'IMG_1910.DNG',
+        '1' => 'Stormy Seas',
+      ),
+      1 => array(
+        '0' => 'IMG_1921.DNG',
+        '1' => 'Stormy Seas',
+      ),
+      2 => array(
+        '0' => 'IMG_2137.DNG',
+        '1' => 'Stormy Seas',
+      )
+    );
+    $this->AssertEquals($imp->parseCSV(), $testarray);
   }
 }
 ?>
