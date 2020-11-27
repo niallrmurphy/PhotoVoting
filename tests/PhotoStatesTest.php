@@ -3,11 +3,12 @@ use PHPUnit\Framework\TestCase;
 require __DIR__ . '/../src/PhotoStates.php';
 
 class PhotoStatesTest extends TestCase {
-  private $dbhandle;
+  private $dbh;
   private $pstates;
 
   public function setUp(): void {
-    $this->dbhandle = new MyDB();
+    $ndb = new MyDB();
+    $this->dbh = $ndb->dbh;
     $drop_table = "DROP TABLE IF EXISTS photoVotes;";
     $make_table = "CREATE TABLE photoVotes (
       photoID INTEGER PRIMARY KEY,
@@ -16,18 +17,20 @@ class PhotoStatesTest extends TestCase {
       imgpath TEXT,
       groups TEXT
     );";
-    $add_data = Array("INSERT INTO photoVotes (photoID, groups) VALUES (0, '1,2,3');",
-      "INSERT INTO photoVotes (photoID, groups) VALUES (1, '2,3,4')");
+    $add_data = Array("INSERT INTO photoVotes (photoID, groups, imgpath) ".
+        "VALUES (0, '1,2,3', 'thing1.jpg');",
+      "INSERT INTO photoVotes (photoID, groups, imgpath) ".
+        "VALUES (1, '2,3,4', 'thing2.jpg')");
     // PDO is one beat to the bar (i.e. no multiple SQL statements)
     // so serialize the setup.
     try {
-      $stmt = $this->dbhandle->db->query($drop_table);
+      $stmt = $this->dbh->query($drop_table);
     } catch (Exception $e) {
       echo $e->getMessage()."\n";
       die ("DB drop table exception in PhotoStatesTest::setUp\n");
     }
     // Make table
-    $stmt = $this->dbhandle->db->prepare($make_table);
+    $stmt = $this->dbh->prepare($make_table);
     if (!$stmt) {
       die ("Could not prepare statement in addVote");
     }
@@ -41,7 +44,7 @@ class PhotoStatesTest extends TestCase {
     // Make data
     foreach ($add_data as $line) {
       try {
-        $stmt = $this->dbhandle->db->query($line);
+        $stmt = $this->dbh->query($line);
       } catch (Exception $e) {
         echo $e->getMessage()."\n";
         die ("DB add data exception in PhotoStatesTest::setUp\n");
@@ -78,6 +81,9 @@ class PhotoStatesTest extends TestCase {
       Array('0' => ['0', '0', '1,2,3'],
             '1' => ['0', '0', '2,3,4']));
   }
+  public function testImagePath() {
+    $this->AssertEquals($this->pstates->getPathForId(0), 'thing1.jpg');
+  }
   public function testBuildGroups() {
     $this->AssertEquals($this->pstates->buildGroups(),
       ['1' => [0],
@@ -86,10 +92,11 @@ class PhotoStatesTest extends TestCase {
        '4' => [1]]
     );
   }
+  // This is actually random, need to find a better way
   public function testDecideWhichImages() {
     $this->AssertEquals($this->pstates->decideWhichImages(), [0, 1]);
     $this->AssertEquals($this->pstates->decideWhichImages(null, 1),
-      [0,]);
+      0);
   }
 }
 ?>

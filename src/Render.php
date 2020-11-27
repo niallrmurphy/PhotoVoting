@@ -2,18 +2,22 @@
 
 require_once __DIR__ . '/../db/db.php';
 require_once __DIR__ . '/../src/PhotoStates.php';
-const IMAGE_PATH 'img';
 
 class Render {
 
+  protected $dbh;
+  protected $pstates;
+  const IMG_PREFIX = "./img/";
+
   function __construct($mydbh = null) {
     if ($mydbh === null) {
-      $this->db = new MyDB();
+      $newobj = new MyDB();
+      $this->dbh = $newobj->dbh;
       // error_log("LOG: default test DB opening\n");
     } else {
-      $this->db = $mydbh;
+      $this->dbh = $mydbh;
     }
-    $this->pstates = new PhotoStates();
+    $this->pstates = new PhotoStates($this->dbh);
   }
 
   function redirectByPolicy() {
@@ -66,7 +70,7 @@ class Render {
 
   }
 
-  function display_header() {
+  function displayHeader() {
     echo('<!DOCTYPE html>
     <html>
 
@@ -81,9 +85,9 @@ class Render {
       <h1>Photo Voting Service</h1>');
   }
 
-  function image_display_block() {
+  function imageDisplayBlock() {
     echo('
-      <img src="https://picsum.photos/800/500/?image=1" id="photoItem" />
+      <img src="?image=1" id="photoItem" />
       <div id="button-div">
         <button class="unpicked fa fa-thumbs-o-up" id="upbtn">  </button>
         <button class="unpicked fa fa-thumbs-o-down" id="downbtn">  </button>
@@ -91,7 +95,28 @@ class Render {
       </div>');
   }
 
+  function displayImageByFilename($filename) {
+    // Nuke this odbc_setoption
+    $real_filename = self::IMG_PREFIX . pathinfo($filename)['filename'] .
+      ".jpg";
+    $handle = fopen($real_filename, "rb");
+    $contents = fread($handle, filesize($real_filename));
+    fclose($handle);
+    header("Content-type: ".$image_mime);
+    $image_mime = image_type_to_mime_type(exif_imagetype($real_filename));
+    echo $contents;
+  }
+
+  function displayImageById($photoid) {
+    if (!isset($photoid)) {
+      return FALSE;
+    }
+    $path = $this->pstates->getPathForId($photoid);
+
+    $this->displayImageByFilename($path);
+  }
+
 }
 
-$R = new Render();
-header('Location: $url');
+//$R = new Render();
+//header('Location: $url');

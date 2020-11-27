@@ -4,12 +4,15 @@ require_once __DIR__ . '/../db/db.php';
 
 class PhotoStates {
 
+  protected $dbh;
+
   function __construct($mydbh = null) {
     if ($mydbh === null) {
-      $this->db = new MyDB();
+      $newobj = new MyDB();
+      $this->dbh = $newobj->dbh;
       // error_log("LOG: default test DB opening\n");
     } else {
-      $this->db = $mydbh;
+      $this->dbh = $mydbh;
     }
   }
 
@@ -22,7 +25,7 @@ class PhotoStates {
       $column_name = $thumb_direction . "Vote";
       $sql = "UPDATE photoVotes SET " . $column_name . " = " . $column_name .
         " " . $delta . " WHERE photoID = ?";
-      $statement = $this->db->db->prepare($sql);
+      $statement = $this->dbh->prepare($sql);
       if (!$statement) {
         die ("Could not prepare statement in addVote");
       }
@@ -42,14 +45,14 @@ class PhotoStates {
 
   function countImages () {
     $sql = 'SELECT COUNT(*) FROM photoVotes';
-    $stmt = $this->db->db->query($sql);
+    $stmt = $this->dbh->query($sql);
     $number = $stmt->fetch()['COUNT(*)'];
     return $number;
   }
 
   function createPhotoArray() {
     $distinct_photo_array = Array();
-    $stmt = $this->db->db->query('SELECT DISTINCT photoID FROM photoVotes');
+    $stmt = $this->dbh->query('SELECT DISTINCT photoID FROM photoVotes');
     foreach ($stmt as $row) {
       array_push($distinct_photo_array, $row['photoID']);
     }
@@ -58,7 +61,7 @@ class PhotoStates {
 
   function buildImageStructure () {
     $total_photo_array = Array();
-    $stmt = $this->db->db->query('SELECT * FROM photoVotes');
+    $stmt = $this->dbh->query('SELECT * FROM photoVotes');
     foreach ($stmt as $row) {
       $total_photo_array[$row['photoID']] = array(
         $row['upVote'], $row['downVote'], $row['groups']);
@@ -72,7 +75,7 @@ class PhotoStates {
     }
     $groups = Array();
     $sql = 'SELECT groups FROM photoVotes WHERE photoID = ?';
-    $statement = $this->db->db->prepare($sql);
+    $statement = $this->dbh->prepare($sql);
     $statement->execute([$photo_id]);
     while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
         $result = $row['groups'];
@@ -80,9 +83,29 @@ class PhotoStates {
     return (explode(",", $result));
   }
 
+  function getPathForId($photo_id) {
+    if ($photo_id === null OR !isset($photo_id)) {
+      return null;
+    }
+    $path = "";
+    $sql = 'SELECT imgpath FROM photoVotes WHERE photoID = ?';
+    $statement = $this->dbh->prepare($sql);
+    $statement->execute([$photo_id]);
+    $found = 0;
+    while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
+      $found++;
+      $result = $row['imgpath'];
+    }
+    if (!isset($result)) {
+      return FALSE;
+    } else {
+      return $result;
+    }
+  }
+
   function buildGroups() {
     $total_group_array = Array();
-    $stmt = $this->db->db->query('SELECT photoID, groups FROM photoVotes');
+    $stmt = $this->dbh->query('SELECT photoID, groups FROM photoVotes');
     foreach ($stmt as $row) {
       $id = $row['photoID'];
       $groupstring = $row['groups'];
@@ -132,7 +155,7 @@ class PhotoStates {
       $group = array_rand($group_struct); // Need display_size check
       $selections = array_rand($group_struct[$group], $display_dize);
     }
-    echo "\nSELECTIONS ", var_dump($selections);
+    //echo "\nSELECTIONS ", var_dump($selections);
     return $selections;
   }
 

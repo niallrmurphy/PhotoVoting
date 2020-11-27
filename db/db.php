@@ -1,15 +1,19 @@
 <?php
 
 class MyDB {
-  public $db;
+
+  public $dbh;
+
   function __construct($db_name = null, $make_schema = null) {
+    // Establish db path
     if ($db_name === null) {
       $db_path = "test.db";
     } else {
       $db_path = $db_name;
     }
+    // SQLite connect to DB
     try {
-      $this->db = new \PDO("sqlite:$db_path", '', '', array(
+      $this->dbh = new \PDO("sqlite:$db_path", '', '', array(
         \PDO::ATTR_EMULATE_PREPARES => false,
         \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
         \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC
@@ -17,6 +21,7 @@ class MyDB {
     } catch (PDOException $e) {
       throw new PDOException($e->getMessage(), (int)$e->getCode());
     }
+    // Make the schema if told to (assumoing not already existing)
     if ($make_schema == True) {
       $make_table = "CREATE TABLE photoVotes (
         photoID INTEGER PRIMARY KEY,
@@ -26,7 +31,7 @@ class MyDB {
         groups TEXT
       );";
       // Make table
-      $stmt = $this->db->prepare($make_table);
+      $stmt = $this->dbh->prepare($make_table);
       if (!$stmt) {
         die ("Could not prepare statement in makeSchema");
       }
