@@ -22,7 +22,7 @@ class MyDB {
       throw new PDOException($e->getMessage(), (int)$e->getCode());
     }
     // Make the schema if told to (assumoing not already existing)
-    if ($make_schema == True) {
+    if ($make_schema == TRUE) {
       $make_table = "CREATE TABLE photoVotes (
         photoID INTEGER PRIMARY KEY,
         upVote INTEGER DEFAULT 0,
