@@ -59,6 +59,17 @@ class PhotoStates {
     return $distinct_photo_array;
   }
 
+  function selectRandomFromPhotoArray($limit) {
+    $distinct_photo_array = Array();
+    $query = "SELECT * FROM photoVotes WHERE ".
+      "photoID IN (SELECT photoID FROM photoVotes ORDER BY RANDOM() LIMIT $limit)";
+    $stmt = $this->dbh->query($query);
+    foreach ($stmt as $row) {
+      array_push($distinct_photo_array, $row['photoID']);
+    }
+    return $distinct_photo_array;
+  }
+
   function buildImageStructure () {
     $total_photo_array = Array();
     $stmt = $this->dbh->query('SELECT * FROM photoVotes');
@@ -122,13 +133,26 @@ class PhotoStates {
     return $total_group_array;
   }
 
+  function selectRandomFromGroups() {
+    return array_rand($this->buildGroups());
+  }
+
+  function selectRandomMembersFromGroup($group = null, $display_size = 2) {
+    if ($group === null) {
+      $group = $this->selectRandomFromGroups();
+    }
+    $total_group_array = $this->buildGroups();
+    $selections = array_rand($total_group_array[$group], $display_size);
+    return $selections;
+  }
+
   function randomImageURL($image_array) {
     return array_rand($image_array);
   }
 
-  function decideWhichImages($group_oriented = null, $display_size = null) {
+  function decideWhichImages($group_name = null, $display_size = null) {
     /**
-     * If group_oriented is false:
+     * If group_name is null:
      * Scan the database to find all images, pick display_size random selections
      * (2 by default).
      * If group_oriented is true:
@@ -143,20 +167,48 @@ class PhotoStates {
     if($display_size === null) {
       $display_size = 2;
     }
-    $number = $this->countImages();
-    $distinct_pics = $this->createPhotoArray();
     $selections = Array();
-    //
-    if ($group_oriented === null) {
-      //array_push($selections).
-      $selections = array_rand($distinct_pics, $display_size);
-    } else {
-      $group_struct = buildGroups();
-      $group = array_rand($group_struct); // Need display_size check
-      $selections = array_rand($group_struct[$group], $display_dize);
+    // Non-group (i.e. select random from whole set)
+    if ($group_name === null) {
+      $distinct_pics = $this->createPhotoArray();
+      $array_keys = array_rand($distinct_pics, $display_size);
+      // This returns a zero-indexed list, but images might start at 1 or more.
+      //foreach ($array_keys as $elem) {
+      //  array_push($selections, $group_struct[$elem]);
+      //}
+      if (gettype($array_keys) == "integer") {
+        $selections = array($array_keys);
+        //echo "FOUND YOU WERE INTEGER\n";
+      }
+      if (gettype($array_keys) == "array") {
+        //echo "ITS AN ARRAY\n";
+        $selections = $array_keys;
+      }
+      return array('selections' => $selections,
+        'group_name' => null);
     }
-    //echo "\nSELECTIONS ", var_dump($selections);
-    return $selections;
-  }
+    // Group-oriented (i.e. select random from within group)
+    $group_struct = $this->buildGroups();
+    if ($group_name == "random") {
+      $group_name = array_rand($group_struct);
+      //echo "GROUP NAME: $group_name\n<br>";
+    }
+    $group_obj = $group_struct[$group_name];
+    if ((sizeof($group_obj) < $display_size) && ($display_size > 1)) {
+      throw new OutOfBoundsException();
+    }
+    // $array_keys = array_rand($group_obj, $display_size);
+    // echo('AK\n<br>');
+    // var_dump($array_keys);
 
+    // foreach ($array_keys as $elem) {
+    //   $selections[], $group_struct[$elem]);
+    // }
+    $array_keys = array_rand($group_obj, $display_size);
+    foreach ($array_keys as $x) {
+      $selections[$x] = $group_obj[$x];
+    }
+    return array('selections' => $selections,
+      'group_name' => $group_name);
+  }
 }

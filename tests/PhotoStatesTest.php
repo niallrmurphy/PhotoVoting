@@ -92,11 +92,31 @@ class PhotoStatesTest extends TestCase {
        '4' => [1]]
     );
   }
+  public function testSelectRandomGroup() {
+    $this->AssertContains($this->pstates->selectRandomFromGroups(),
+      [1, 2, 3, 4]);
+  }
+  public function testSelectRandomMembersFromGroup() {
+    $rmgrp = $this->pstates->selectRandomMembersFromGroup(2, 2);
+    $this->AssertEquals($rmgrp, array(0, 1));
+  }
   // This is actually random, need to find a better way
   public function testDecideWhichImages() {
-    $this->AssertEquals($this->pstates->decideWhichImages(), [0, 1]);
-    $this->AssertEquals($this->pstates->decideWhichImages(null, 1),
-      0);
+    $full_non_group_dwi = $this->pstates->decideWhichImages(null, 2);
+    $non_group_dwi = $this->pstates->decideWhichImages(null, 1);
+    //$rgroup_dwi = $this->pstates->decideWhichImages("random", 2);
+    $group_dwi = $this->pstates->decideWhichImages(3, 2);
+    $full = array('0' => 0, '1' => 1);
+    // Test full
+    $this->AssertEquals($full_non_group_dwi['selections'],
+      $full);
+    // Subset
+    //$this->AssertContains($non_group_dwi['selections'], [0, 1]);
+    //$this->AssertEquals($rgroup_dwi['selections'], [0, 1]);
+    $this->AssertEquals($group_dwi['selections'], [0 => 0, 1 => 1]);
+  }
+  public function testSelectRandomImage() {
+    $this->AssertEquals($this->pstates->selectRandomFromPhotoArray(2), [0, 1]);
   }
 }
 ?>
