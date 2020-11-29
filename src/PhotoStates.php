@@ -50,6 +50,13 @@ class PhotoStates {
     return $number;
   }
 
+  function countVotes() {
+    $sql = 'SELECT SUM(upVote + downVote) FROM photoVotes';
+    $stmt = $this->dbh->query($sql);
+    $number = $stmt->fetch()['SUM(upVote + downVote)'];
+    return $number;
+  }
+
   function createPhotoArray() {
     $distinct_photo_array = Array();
     $stmt = $this->dbh->query('SELECT DISTINCT photoID FROM photoVotes');

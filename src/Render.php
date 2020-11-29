@@ -23,6 +23,7 @@ class Render {
   function redirectByPolicy() {
     $roll = rand(1, 100); // Should be a tunable
     $assumed_path = $_SERVER['PHP_SELF'];
+    $assumed_path = "";
     if ($roll > 0 && $roll < 33) {
       // hot-or-not two-off, non-group
       $postfix = "/rand/2";
@@ -70,9 +71,12 @@ class Render {
 
   }
 
-  function displayHeader($number = null) {
+  function displayHeader($number = null, $votes = null) {
     if ((!isset($number)) or ($number === null)) {
       $number = 100;
+    }
+    if ((!isset($votes)) or ($votes === null)) {
+      $votes = "(uncounted)";
     }
     echo('<!DOCTYPE html>
     <html>
@@ -90,7 +94,9 @@ class Render {
     </head>
 
     <body>
-      <h1>Photo Voting Service</h1><h3>Select the best image from your point of view.</h3>');
+      <h1>Photo Voting Service</h1>
+      <h2>Select what you think is the best image.</h2>
+      <h4>'.$votes.' total votes.</h4>');
   }
 
   function displayCSS($number = null) {
@@ -126,14 +132,14 @@ class Render {
     }
 
     /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 1600px) {
   .column {
     width: 100%;
   }
 }
 
     /*.responsive {
-      width: 100%;
+      min-width: 300px;
       height: auto;
     }*/');
   }
@@ -148,10 +154,16 @@ class Render {
 
   function imageSideBySideBlock($number, $urls) {
     $division = round(100 / $number);
+    $pat = '%\/img\/(\d+)%';
     echo ('<div class="row">');
     for ($x = 0; $x < $number; $x++) {
+      $matches = array();
+      preg_match($pat, $urls[$x], $matches);
+      $id = $matches[1];
       echo('<div class="column">');
-      echo('<img src="'.$urls[$x].'" style="width:100%">');
+      echo('<a href="/addVote/'.$id.'">');
+      echo('<img src="'.$urls[$x].'" style="width:100%" class="responsive">');
+      echo('</a>');
       echo('</div>');
     }
     echo ('</div>');

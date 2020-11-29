@@ -21,7 +21,7 @@ if (php_sapi_name() == 'cli-server') {
     } elseif (preg_match('%\/rand\/(\d+)$%', $req, $matches)) {
       $count = $matches[1];
       $chosen_ones = $ps->selectRandomFromPhotoArray($count);
-      displayImagePage($r, $matches[1], $chosen_ones, null);
+      displayImagePage($r, $matches[1], $ps->countVotes(), $chosen_ones, "total collection");
     } elseif (preg_match('%(\d+)?\/style\.css%', $req, $matches)) {
       if (isset($matches[1])) {
         $r->displayCSS($matches[1]);
@@ -36,16 +36,23 @@ if (php_sapi_name() == 'cli-server') {
       $resultarray = $ps->decideWhichImages(True, $display_size);
       $selections = $resultarray['selections'];
       $group_name = $resultarray['group_name'];
-      displayImagePage($r, $matches[1], $selections, $group_name);
-    } elseif (preg_match('%\/addVote%', $req, $matches)) {
+      displayImagePage($r, $matches[1], $ps->countVotes(), $selections, $group_name);
+    } elseif (preg_match('%\/addVote/(\d+)$%', $req, $matches)) {
+      $id = $matches[1];
+      $ps->addVote($id);
+      $redirect = $r->redirectByPolicy();
+      //$redirect = "/group/2";
+      header("Location: $redirect");
+      exit;
+    }
   }
 } else { // We're not a CLI-server, so we're presumably a 'real' server...
 
 }
 
-function displayImagePage ($r, $number, $chosen_ones, $text) {
+function displayImagePage ($r, $number, $total_votes, $chosen_ones, $text) {
   $division = round(100/$number);
-  $r->displayHeader($division);
+  $r->displayHeader($division, $total_votes);
   foreach (array_values($chosen_ones) as $elem) {
     $uri = $r->generateImageURI($elem);
     $urls[] = $uri;

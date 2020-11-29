@@ -17,10 +17,10 @@ class PhotoStatesTest extends TestCase {
       imgpath TEXT,
       groups TEXT
     );";
-    $add_data = Array("INSERT INTO photoVotes (photoID, groups, imgpath) ".
-        "VALUES (0, '1,2,3', 'thing1.jpg');",
-      "INSERT INTO photoVotes (photoID, groups, imgpath) ".
-        "VALUES (1, '2,3,4', 'thing2.jpg')");
+    $add_data = Array("INSERT INTO photoVotes (photoID, upVote, groups, imgpath) ".
+        "VALUES (0, 3, '1,2,3', 'thing1.jpg');",
+      "INSERT INTO photoVotes (photoID, downVote, groups, imgpath) ".
+        "VALUES (1, 2, '2,3,4', 'thing2.jpg')");
     // PDO is one beat to the bar (i.e. no multiple SQL statements)
     // so serialize the setup.
     try {
@@ -69,6 +69,9 @@ class PhotoStatesTest extends TestCase {
   public function testCountImages() {
     $this->AssertEquals(2, $this->pstates->countImages());
   }
+  public function testCountVotes() {
+    $this->AssertEquals(5, $this->pstates->countVotes());
+  }
   public function testCreateArray() {
     $this->AssertEquals([0,1], $this->pstates->createPhotoArray());
   }
@@ -78,8 +81,8 @@ class PhotoStatesTest extends TestCase {
   }
   public function testBuildImageStructure() {
     $this->AssertEquals($this->pstates->buildImageStructure(),
-      Array('0' => ['0', '0', '1,2,3'],
-            '1' => ['0', '0', '2,3,4']));
+      Array('0' => ['3', '0', '1,2,3'],
+            '1' => ['0', '2', '2,3,4']));
   }
   public function testImagePath() {
     $this->AssertEquals($this->pstates->getPathForId(0), 'thing1.jpg');
