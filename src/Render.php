@@ -7,7 +7,7 @@ class Render {
 
   protected $dbh;
   protected $pstates;
-  const IMG_PREFIX = "./img/";
+  const IMG_PREFIX = "img/";
 
   function __construct($mydbh = null) {
     if ($mydbh === null) {
@@ -25,13 +25,13 @@ class Render {
     $assumed_path = $_SERVER['PHP_SELF'];
     if ($roll > 0 && $roll < 33) {
       // hot-or-not two-off, non-group
-      $postfix = "$?n=2&group=no";
+      $postfix = "/rand/2";
     } elseif ($roll >= 33 and $roll < 66) {
       // hot-or-not two-off, group
-      $postfix = "$?n=2&group=rand";
+      $postfix = "/group/2";
     } elseif ($roll >=66) {
       // hot-or-not N-off, non-group
-      $postfix = "?n=4&group=no";
+      $postfix = "/rand/4";
     }
     $prefix = $assumed_path;
     $url = $prefix . $postfix;
@@ -70,19 +70,91 @@ class Render {
 
   }
 
-  function displayHeader() {
+  function displayHeader($number = null) {
+    if ((!isset($number)) or ($number === null)) {
+      $number = 100;
+    }
     echo('<!DOCTYPE html>
     <html>
 
     <head>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link rel="stylesheet" href="./style.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">');
+//      <link rel="stylesheet" href="/'.$number.'/style.css" type="text/css"/>
+// <!--      <link rel="stylesheet" href="/public/style.css"> -->
+    echo('<style>');
+    $this->displayCSS($number);
+    echo('</style>');
+    echo('
       <meta charset="utf-8">
       <title></title>
     </head>
 
     <body>
-      <h1>Photo Voting Service</h1>');
+      <h1>Photo Voting Service</h1><h3>Select the best image from your point of view.</h3>');
+  }
+
+  function displayCSS($number = null) {
+    if ((!isset($number)) or ($number === null)) {
+      $number = 100;
+    }
+    echo ('
+    * {
+      box-sizing: border-box;
+    }
+
+    img:hover {
+        border: 5px solid red;
+    }
+
+    img {
+        cursor: pointer;
+        border: 5px solid white;
+    }
+
+    /* Three image containers (use 25% for four, and 50% for two, etc) */
+    .column {
+      float: left;
+      width: '.$number.'%;
+      padding: 5px;
+    }
+
+    /* Clear floats after image containers */
+    .row::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+
+    /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 700px) {
+  .column {
+    width: 100%;
+  }
+}
+
+    /*.responsive {
+      width: 100%;
+      height: auto;
+    }*/');
+  }
+
+  function displayLikeButtons() {
+    echo('  <div id="button-div">
+        <button class="unpicked fa fa-thumbs-o-up" id="upbtn">  </button>
+        <button class="unpicked fa fa-thumbs-o-down" id="downbtn">  </button>
+        <div id="voteTally"></div>
+      </div>');
+  }
+
+  function imageSideBySideBlock($number, $urls) {
+    $division = round(100 / $number);
+    echo ('<div class="row">');
+    for ($x = 0; $x < $number; $x++) {
+      echo('<div class="column">');
+      echo('<img src="'.$urls[$x].'" style="width:100%">');
+      echo('</div>');
+    }
+    echo ('</div>');
   }
 
   function imageDisplayBlock() {
@@ -95,9 +167,19 @@ class Render {
       </div>');
   }
 
+  function imageFooter($group = null) {
+    echo('<!-- <script src="/main.js"></script> -->');
+    if (!empty($group)) {
+      echo ("<i>Group name: '$group'</i>");
+    }
+    echo ('
+    </body>
+    </html>');
+  }
+
   function displayImageByFilename($filename) {
     // Nuke this odbc_setoption
-    $real_filename = self::IMG_PREFIX . pathinfo($filename)['filename'] .
+    $real_filename = "./".self::IMG_PREFIX . pathinfo($filename)['filename'] .
       ".jpg";
     $handle = fopen($real_filename, "rb");
     $contents = fread($handle, filesize($real_filename));
@@ -112,10 +194,22 @@ class Render {
       return FALSE;
     }
     $path = $this->pstates->getPathForId($photoid);
-
-    $this->displayImageByFilename($path);
+    if (!isset($path) or $path == "") {
+      echo "<b>No such image.</b>";
+      return FALSE;
+    } else {
+      $this->displayImageByFilename($path);
+    }
   }
 
+  function generateImageURI($photoid) {
+    if (!isset($photoid)) {
+      return FALSE;
+    }
+    //$url = $_SERVER["SERVER_NAME"] . $_SERVER["DOCUMENT_ROOT"] .
+    $url = "/" . self::IMG_PREFIX . "$photoid";
+    return $url;
+  }
 }
 
 //$R = new Render();
