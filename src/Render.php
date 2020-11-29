@@ -30,7 +30,9 @@ class Render {
     } elseif ($roll >= 33 and $roll < 66) {
       // hot-or-not two-off, group
       $postfix = "/group/2";
-    } elseif ($roll >=66) {
+    } elseif ($roll >= 66 and $roll < 80) {
+      $postfix = "/group/4";
+    } elseif ($roll >=80) {
       // hot-or-not N-off, non-group
       $postfix = "/rand/4";
     }
