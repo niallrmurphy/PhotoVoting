@@ -134,7 +134,7 @@ class Render {
     }
 
     /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 1600px) {
+@media screen and (max-width: 800px) {
   .column {
     width: 100%;
   }

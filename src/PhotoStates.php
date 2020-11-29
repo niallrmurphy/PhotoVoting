@@ -197,20 +197,20 @@ class PhotoStates {
     // Group-oriented (i.e. select random from within group)
     $group_struct = $this->buildGroups();
     if ($group_name == "random") {
-      $group_name = array_rand($group_struct);
-      //echo "GROUP NAME: $group_name\n<br>";
+      // Make sure we only select ones where the group is larger/equal
+      // to the display_size.
+      $new_struct = array();
+      foreach ($group_struct as $array_key => $array_value) {
+        if (sizeof($array_value) >= $display_size) {
+          $new_struct = [$array_key => $array_value];
+        }
+      }
+      $group_name = array_rand($new_struct);
     }
     $group_obj = $group_struct[$group_name];
     if ((sizeof($group_obj) < $display_size) && ($display_size > 1)) {
       throw new OutOfBoundsException();
     }
-    // $array_keys = array_rand($group_obj, $display_size);
-    // echo('AK\n<br>');
-    // var_dump($array_keys);
-
-    // foreach ($array_keys as $elem) {
-    //   $selections[], $group_struct[$elem]);
-    // }
     $array_keys = array_rand($group_obj, $display_size);
     foreach ($array_keys as $x) {
       $selections[$x] = $group_obj[$x];
